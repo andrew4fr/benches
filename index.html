@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Найти скамейку рядом</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=73dd9353-c03b-4e4c-a6f4-7a626720133d&lang=ru_RU" type="text/javascript"></script>
+</head>
+<body>
+    <div class="app">
+        <header>
+            <h1>🪑 Найти скамейку рядом</h1>
+            <p class="subtitle">Найдите удобное место для отдыха в вашем городе</p>
+        </header>
+
+        <main>
+            <div class="controls">
+                <button id="locateBtn" class="btn btn-primary">
+                    📍 Найти мои скамейки
+                </button>
+                <button id="addBenchBtn" class="btn btn-secondary">
+                    ➕ Добавить скамейку
+                </button>
+            </div>
+
+            <div id="map"></div>
+
+            <div id="infoPanel" class="info-panel hidden">
+                <h2>Скамейки рядом с вами</h2>
+                <div id="benchList" class="bench-list"></div>
+            </div>
+
+            <div id="addBenchModal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Добавить новую скамейку</h2>
+                    <form id="addBenchForm">
+                        <div class="form-group">
+                            <label for="benchName">Название / Описание</label>
+                            <input type="text" id="benchName" placeholder="Например: у парка, у фонтана" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="benchComment">Комментарий</label>
+                            <textarea id="benchComment" placeholder="Особенности скамейки (тенистое место, вид и т.д.)"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="benchEmail">Ваш email (для связи)</label>
+                            <input type="email" id="benchEmail" placeholder="example@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="benchPhoto">Фото скамейки</label>
+                            <input type="file" id="benchPhoto" accept="image/*">
+                            <div id="photoPreview" class="photo-preview"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Координаты (кликните на карте)</label>
+                            <input type="text" id="benchCoords" placeholder="Нажмите на карту, чтобы выбрать место" readonly required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Добавить скамейку</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2026 Найти скамейку рядом | Данные карт: Яндекс</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
