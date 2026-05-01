@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель - Модерация скамеек</title>
+    <link rel="stylesheet" href="/admin/styles.css">
+</head>
+<body>
+    <div class="admin-container">
+        <header>
+            <h1>🪑 Админ-панель</h1>
+            <p>Модерация заявок на добавление скамеек</p>
+        </header>
+
+        <div id="loginSection" class="login-section">
+            <div class="login-card">
+                <h2>Вход в админ-панель</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Логин</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Пароль</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Войти</button>
+                </form>
+                <p id="loginError" class="error-message"></p>
+            </div>
+        </div>
+
+        <div id="adminSection" class="admin-section hidden">
+            <div class="header-actions">
+                <h2>Ожидают модерации</h2>
+                <button id="refreshBtn" class="btn btn-secondary">🔄 Обновить</button>
+                <button id="logoutBtn" class="btn btn-danger">Выйти</button>
+            </div>
+
+            <div id="pendingList" class="pending-list">
+                <p class="loading">Загрузка...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/admin/app.js"></script>
+</body>
+</html>

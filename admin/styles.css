@@ -1,0 +1,236 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.admin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+.login-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+}
+
+.login-card {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-card h2 {
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+    width: 100%;
+}
+
+.btn-primary:hover {
+    background: #5568d3;
+}
+
+.btn-secondary {
+    background: #2196F3;
+    color: white;
+}
+
+.btn-danger {
+    background: #f44336;
+    color: white;
+}
+
+.btn-success {
+    background: #4CAF50;
+    color: white;
+}
+
+.btn-warning {
+    background: #ff9800;
+    color: white;
+}
+
+.error-message {
+    color: #f44336;
+    text-align: center;
+    margin-top: 15px;
+    font-size: 0.9rem;
+}
+
+.admin-section {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.header-actions h2 {
+    color: #333;
+}
+
+.pending-list {
+    display: grid;
+    gap: 20px;
+}
+
+.pending-item {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 4px solid #ff9800;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: start;
+}
+
+.bench-info h3 {
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.bench-info p {
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.bench-info .email {
+    color: #667eea;
+    font-weight: 500;
+}
+
+.bench-info .coords {
+    font-size: 0.9rem;
+    color: #999;
+}
+
+.bench-photo {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.bench-actions {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+}
+
+.bench-actions .btn {
+    padding: 10px 20px;
+    min-width: 120px;
+}
+
+.loading {
+    text-align: center;
+    color: #666;
+    padding: 40px;
+}
+
+.empty-state {
+    text-align: center;
+    color: #666;
+    padding: 60px 20px;
+}
+
+.empty-state h3 {
+    color: #4CAF50;
+    margin-bottom: 10px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .pending-item {
+        grid-template-columns: 1fr;
+    }
+
+    .header-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .bench-actions {
+        flex-direction: row;
+    }
+
+    .bench-actions .btn {
+        flex: 1;
+    }
+}

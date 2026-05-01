@@ -13,8 +13,18 @@ const API_BASE_URL = 'http://localhost:8080/api';
 ymaps.ready(init);
 
 function init() {
-    // Определение случайного центра карты (северная Америка)
+    // Определение случайного центра карты
     const randomCenters = [
+        [55.7558, 37.6173], // Москва
+        [55.7961, 49.1019],  // Казань
+        [56.8389, 60.6057],  // Екатеринбург
+        [5.084, 82.9357],  // Новосибирск
+        [53.201, 50.150],  // Самара
+        [51.5027, 34.3964],  // Курск
+        [45.035, 39.031],  // Краснодар
+        [47.2357, 39.7015],  // Ростов-на-Дону
+        [59.9343, 30.351],  // Санкт-Петербург
+        [43.6028, 38.729]   // Сочи
         [40.7128, -74.0060],  // Нью-Йорк
         [34.0522, -118.2437], // Лос-Анджелес
         [51.5074, -0.1278],   // Лондон
@@ -24,14 +34,12 @@ function init() {
     ];
     const randomCenter = randomCenters[Math.floor(Math.random() * randomCenters.length)];
 
-    // Создание карты со случайным центром (будет изменён после геолокации)
     myMap = new ymaps.Map("map", {
         center: randomCenter,
         zoom: 10,
         controls: ['zoomControl']
     });
 
-    // Кнопка "Моё местоположение"
     const geolocationButton = new ymaps.control.Button({
         data: {
             content: '📍',
@@ -44,7 +52,7 @@ function init() {
         }
     });
 
-    geolocationButton.events.add('click', function() {
+    geolocationButton.events.add('click', function () {
         if (userPosition) {
             myMap.setCenter(userPosition, 15);
         } else {
@@ -56,31 +64,24 @@ function init() {
 
     myMap.controls.add(geolocationButton);
 
-    // Сначала загружаем скамейки, затем определяем локацию
     fetchBenches().then(() => {
-        // Автоматическое определение геопозиции после загрузки скамеек
         return locateUser();
     }).then(() => {
-        // Перемещаем карту к пользователю
         myMap.setCenter(userPosition, 15);
 
-        // Обновляем список скамеек с расстояниями
         updateBenchesWithDistance();
 
         document.getElementById('infoPanel').classList.remove('hidden');
     }).catch((error) => {
         console.error('Ошибка:', error);
-        // При ошибке геолокации показать все скамейки без расстояний
         renderBenches(benches);
     });
 
-    // Обработка клика по карте для выбора места
     myMap.events.add('click', function (e) {
         const coords = e.get('coords');
         selectedCoords = coords;
         document.getElementById('benchCoords').value = `${coords[0].toFixed(6)}, ${coords[1].toFixed(6)}`;
 
-        // Показываем метку выбранной точки
         if (window.selectedMarker) {
             myMap.geoObjects.remove(window.selectedMarker);
         }
@@ -94,34 +95,27 @@ function init() {
         myMap.geoObjects.add(window.selectedMarker);
     });
 
-    // Кнопка "Найти мои скамейки"
-    // Удалена - геолокация определяется автоматически
-
-    // Кнопка "Добавить скамейку"
-    document.getElementById('addBenchBtn').addEventListener('click', function() {
+    document.getElementById('addBenchBtn').addEventListener('click', function () {
         document.getElementById('addBenchModal').classList.remove('hidden');
     });
 
-    // Закрытие модального окна
-    document.querySelector('.close').addEventListener('click', function() {
+    document.querySelector('.close').addEventListener('click', function () {
         document.getElementById('addBenchModal').classList.add('hidden');
     });
 
-    window.addEventListener('click', function(e) {
+    window.addEventListener('click', function (e) {
         if (e.target === document.getElementById('addBenchModal')) {
             document.getElementById('addBenchModal').classList.add('hidden');
         }
     });
 
-    // Обработка формы добавления скамейки
     document.getElementById('addBenchForm').addEventListener('submit', addBench);
 
-    // Предпросмотр фото
-    document.getElementById('benchPhoto').addEventListener('change', function(e) {
+    document.getElementById('benchPhoto').addEventListener('change', function (e) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 selectedPhoto = e.target.result;
                 const preview = document.getElementById('photoPreview');
                 preview.innerHTML = `<img src="${selectedPhoto}" alt="Предпросмотр">`;
@@ -171,7 +165,6 @@ function locateUser() {
     }).then(function (result) {
         userPosition = result.geoObjects.get(0).geometry.getCoordinates();
 
-        // Создание метки пользователя
         if (userMarker) {
             myMap.geoObjects.remove(userMarker);
         }
@@ -184,7 +177,6 @@ function locateUser() {
 
         myMap.geoObjects.add(userMarker);
 
-        // Фильтрация и отображение скамеек рядом
         updateBenchesWithDistance();
 
         document.getElementById('infoPanel').classList.remove('hidden');
@@ -214,23 +206,21 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     const Δφ = (lat2 - lat1) * Math.PI / 180;
     const Δλ = (lon2 - lon1) * Math.PI / 180;
 
-    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-              Math.cos(φ1) * Math.cos(φ2) *
-              Math.sin(Δλ/2) * Math.sin(Δλ/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) *
+        Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return R * c;
 }
 
 function renderBenches(benchList) {
-    // Защита от null/undefined
     if (!benchList || !Array.isArray(benchList)) {
         benchList = [];
     }
 
     const container = document.getElementById('benchList');
 
-    // Очистка старых меток скамеек
     benchMarkers.forEach(marker => {
         myMap.geoObjects.remove(marker);
     });
@@ -263,7 +253,6 @@ function renderBenches(benchList) {
             </div>
         `;
 
-        // Добавление метки на карту
         const balloonContent = `
             <div style="max-width: 200px;">
                 <strong>${bench.name}</strong><br>
@@ -303,7 +292,6 @@ function addBench(e) {
     const comment = document.getElementById('benchComment').value;
     const email = document.getElementById('benchEmail').value;
 
-    // Отправка данных на бэкэнд
     const benchData = {
         name: name,
         comment: comment,
@@ -333,7 +321,6 @@ function addBench(e) {
                 benches.push(savedBench);
             }
 
-            // Если есть пользовательская позиция, рассчитываем расстояние
             let distanceText = '—';
             if (userPosition) {
                 const distance = calculateDistance(
@@ -345,7 +332,6 @@ function addBench(e) {
                     : `${(distance / 1000).toFixed(1)} км`;
             }
 
-            // Добавление метки на карту
             const balloonContent = `
             <div style="max-width: 200px;">
                 <strong>${name}</strong><br>
@@ -365,7 +351,6 @@ function addBench(e) {
             myMap.geoObjects.add(marker);
             benchMarkers.push(marker);
 
-            // Очистка формы и закрытие модального окна
             document.getElementById('addBenchForm').reset();
             document.getElementById('addBenchModal').classList.add('hidden');
             document.getElementById('photoPreview').style.display = 'none';
@@ -378,7 +363,6 @@ function addBench(e) {
             selectedCoords = null;
             selectedPhoto = null;
 
-            // Обновление отображения
             if (userPosition) {
                 updateBenchesWithDistance();
             } else {

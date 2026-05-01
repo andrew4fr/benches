@@ -25,11 +25,19 @@ createdb benches
 
 Создайте файл `.env`:
 ```
+# База данных
 PG_HOST=localhost
 PG_PORT=5432
 PG_USER=postgres
 PG_PASSWORD=postgres
 PG_DBNAME=benches
+
+# Админ-панель
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin123
+ADMIN_EMAIL=admin@example.com
+
+# Порт сервера
 PORT=8080
 ```
 
@@ -48,10 +56,10 @@ go run main.go
 ## API
 
 ### GET /api/benches
-Получить список всех скамеек
+Получить список **одобренных** скамеек (для публичной карты)
 
 ### POST /api/benches
-Добавить новую скамейку
+Добавить новую скамейку (статус: pending)
 
 ```json
 {
@@ -64,8 +72,27 @@ go run main.go
 }
 ```
 
+## Админ-панель
+
+Доступна по адресу: http://localhost:8080/admin/
+
+### Функции:
+- Выход на учётную запись (логин/пароль из `.env`)
+- Просмотр списка ожидающих модерации скамеек
+- Одобрение или отклонение заявок
+- Автоматическое обновление списка
+
+### API админки:
+- `POST /api/admin/login` — вход
+- `GET /api/admin/pending` — список ожидающих
+- `POST /api/admin/bench/{id}/approve` — одобрить
+- `POST /api/admin/bench/{id}/reject` — отклонить
+
 ## Docker (опционально)
 
 ```bash
 docker run --name benches-db -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:15
 ```
+
+PORT=8080 go run main.go // back
+python3 -m http.server 8000 // front
