@@ -141,13 +141,20 @@ func createTable() error {
 		email VARCHAR(255),
 		latitude DOUBLE PRECISION NOT NULL,
 		longitude DOUBLE PRECISION NOT NULL,
-		location geography(POINT, 4326)
 		photo TEXT,
 		status VARCHAR(20) DEFAULT 'pending',
 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 	)`
 
 	_, err := db.Exec(query)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(`
+      ALTER TABLE benches
+      ADD COLUMN IF NOT EXISTS location geography(POINT, 4326)
+  `)
 	if err != nil {
 		return err
 	}
