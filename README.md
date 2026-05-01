@@ -1,4 +1,4 @@
-# PostgreSQL для проекта benches
+## PostgreSQL для проекта benches
 
 ## Установка
 
@@ -6,6 +6,15 @@
 ```bash
 brew install postgresql
 brew services start postgresql
+```
+
+### Установка PostGIS
+```bash
+# macOS
+brew install postgis
+
+# Ubuntu/Debian
+sudo apt-get install postgresql-15-postgis-3
 ```
 
 ### Создание базы данных и пользователя
@@ -16,9 +25,14 @@ createuser -s postgres
 # Создаем базу данных
 createdb benches
 
-# Или через psql:
-# psql -U postgres
-# CREATE DATABASE benches;
+# Включаем расширение PostGIS
+psql -d benches -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+```
+
+### Запуск миграций
+```bash
+# Применяем миграции для создания индексов и триггеров
+psql -U postgres -d benches -f migrate.sql
 ```
 
 ## Переменные окружения

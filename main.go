@@ -141,12 +141,22 @@ func createTable() error {
 		email VARCHAR(255),
 		latitude DOUBLE PRECISION NOT NULL,
 		longitude DOUBLE PRECISION NOT NULL,
+		location geography(POINT, 4326)
 		photo TEXT,
 		status VARCHAR(20) DEFAULT 'pending',
 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 	)`
 
 	_, err := db.Exec(query)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(`
+		UPDATE benches
+		SET location = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)
+		WHERE location IS NULL
+	`)
 	return err
 }
 
@@ -207,6 +217,12 @@ func createBench(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err := checkNearbyBenches(req.Latitude, req.Longitude)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	var benchID int
 	var photo *string
 
@@ -214,7 +230,7 @@ func createBench(w http.ResponseWriter, r *http.Request) {
 		photo = req.Photo
 	}
 
-	err := db.QueryRow(`
+	err = db.QueryRow(`
 		INSERT INTO benches (name, comment, email, latitude, longitude, photo)
 		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id
@@ -233,11 +249,37 @@ func createBench(w http.ResponseWriter, r *http.Request) {
 		Latitude:  req.Latitude,
 		Longitude: req.Longitude,
 		Photo:     photo,
+		Status:    "pending",
 		CreatedAt: time.Now(),
 	}
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(bench)
+}
+
+func checkNearbyBenches(lat, lon float64) error {
+	query := `
+		SELECT COUNT(*)
+		FROM benches
+		WHERE status != 'rejected'
+		AND ST_DWithin(
+			location,
+			ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography,
+			2.0
+		)
+	`
+
+	var count int
+	err := db.QueryRow(query, lon, lat).Scan(&count)
+	if err != nil {
+		return err
+	}
+
+	if count > 0 {
+		return fmt.Errorf("Ваша скамейка слишком близко к уже добавленной (минимум 2 метра)")
+	}
+
+	return nil
 }
 
 func adminLogin(w http.ResponseWriter, r *http.Request) {
