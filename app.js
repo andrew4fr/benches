@@ -137,7 +137,23 @@ function init() {
 
 async function fetchBenches() {
     try {
-        const response = await fetch(`${API_BASE_URL}/benches`);
+        let url = `${API_BASE_URL}/benches`;
+
+        let centerCoords = myMap.getCenter();
+        let lat = centerCoords[0];
+        let lon = centerCoords[1];
+
+        if (selectedCoords) {
+            lat = selectedCoords[0];
+            lon = selectedCoords[1];
+        } else if (centerCoords) {
+            lat = centerCoords[0];
+            lon = centerCoords[1];
+        }
+
+        url += `?lat=${lat}&lon=${lon}`;
+
+        const response = await fetch(url);
         if (!response.ok) throw new Error('Ошибка загрузки');
         benches = await response.json();
         renderBenches(benches);

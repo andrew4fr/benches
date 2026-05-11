@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/smtp"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -170,12 +171,42 @@ func createTable() error {
 func getBenches(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	rows, err := db.Query(`
+	latParam := r.URL.Query().Get("lat")
+	lonParam := r.URL.Query().Get("lon")
+
+	var query string
+	var args []interface{}
+
+	if latParam == "" || lonParam == "" {
+		http.Error(w, "Не указаны координаты", http.StatusBadRequest)
+		return
+	}
+
+	lat, err := strconv.ParseFloat(latParam, 64)
+	if err != nil {
+		http.Error(w, "Неверный формат lat", http.StatusBadRequest)
+		return
+	}
+	lon, err := strconv.ParseFloat(lonParam, 64)
+	if err != nil {
+		http.Error(w, "Неверный формат lon", http.StatusBadRequest)
+		return
+	}
+
+	query = `
 		SELECT id, name, comment, email, latitude, longitude, photo, status, created_at
 		FROM benches
 		WHERE status = 'approved'
+		AND ST_DWithin(
+			location,
+			ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography,
+			500
+		)
 		ORDER BY created_at DESC
-	`)
+	`
+	args = []interface{}{lon, lat}
+
+	rows, err := db.Query(query, args...)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
