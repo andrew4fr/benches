@@ -24,17 +24,17 @@ function checkLogin() {
 
 async function handleLogin(e) {
     e.preventDefault();
-    
+
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/admin/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
         });
-        
+
         if (response.ok) {
             const data = await response.json();
             localStorage.setItem('adminToken', data.token);
@@ -63,14 +63,14 @@ function handleLogout() {
 async function loadPendingBenches() {
     const container = document.getElementById('pendingList');
     container.innerHTML = '<p class="loading">Загрузка...</p>';
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/admin/pending`);
         if (!response.ok) throw new Error('Ошибка загрузки');
-        
+
         const benches = await response.json();
-        
-        if (benches.length === 0) {
+
+        if (benches === null || benches.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
                     <h3>✅ Все заявки обработаны!</h3>
@@ -79,7 +79,7 @@ async function loadPendingBenches() {
             `;
             return;
         }
-        
+
         container.innerHTML = benches.map(bench => `
             <div class="pending-item" data-id="${bench.id}">
                 <div class="bench-info">
@@ -103,12 +103,12 @@ async function loadPendingBenches() {
 
 async function approveBench(id) {
     if (!confirm('Одобрить эту скамейку?')) return;
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/admin/bench/${id}/approve`, {
             method: 'POST'
         });
-        
+
         if (response.ok) {
             loadPendingBenches();
         } else {
@@ -122,12 +122,12 @@ async function approveBench(id) {
 
 async function rejectBench(id) {
     if (!confirm('Отклонить эту заявку?')) return;
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/admin/bench/${id}/reject`, {
             method: 'POST'
         });
-        
+
         if (response.ok) {
             loadPendingBenches();
         } else {

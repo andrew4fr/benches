@@ -15,17 +15,17 @@
         </header>
 
         <main>
-            <div class="controls">
-                <button id="addBenchBtn" class="btn btn-secondary">
-                    ➕ Добавить скамейку
-                </button>
+            <div id="infoPanel" class="info-panel hidden">
+                <h2>Скамейки рядом с вами</h2>
+                <div id="benchList" class="bench-list"></div>
             </div>
 
             <div id="map"></div>
 
-            <div id="infoPanel" class="info-panel hidden">
-                <h2>Скамейки рядом с вами</h2>
-                <div id="benchList" class="bench-list"></div>
+            <div class="controls">
+                <button id="addBenchBtn" class="btn btn-secondary">
+                    ➕ Добавить скамейку
+                </button>
             </div>
 
             <div id="addBenchModal" class="modal hidden">
