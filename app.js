@@ -95,6 +95,12 @@ function init() {
         myMap.geoObjects.add(window.selectedMarker);
     });
 
+    myMap.events.add('boundschange', function () {
+        if (userPosition) {
+            updateBenchesWithDistance();
+        }
+    });
+
     document.getElementById('addBenchBtn').addEventListener('click', function () {
         document.getElementById('addBenchModal').classList.remove('hidden');
     });
